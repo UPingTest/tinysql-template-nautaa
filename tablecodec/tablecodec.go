@@ -16,6 +16,7 @@ package tablecodec
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"math"
 	"time"
 
@@ -72,7 +73,25 @@ func EncodeRowKeyWithHandle(tableID int64, handle int64) kv.Key {
 // DecodeRecordKey decodes the key and gets the tableID, handle.
 func DecodeRecordKey(key kv.Key) (tableID int64, handle int64, err error) {
 	/* Your code here */
-	return
+	if !key.HasPrefix(tablePrefix){
+		return 0,0,fmt.Errorf("prefix error")
+	}
+	tmp:=make([]byte,len([]byte(key)))
+	copy(tmp,key)
+	tmp=tmp[tablePrefixLength:]
+	tmp,tableID,err=codec.DecodeInt(tmp)
+	if err!=nil{
+		return 0,0,err
+	}
+	if !kv.Key(tmp).HasPrefix(recordPrefixSep){
+		return 0,0,fmt.Errorf("prefix error")
+	}
+	tmp=tmp[recordPrefixSepLength:]
+	_,handle,err=codec.DecodeInt(tmp)
+	if err!=nil{
+		return 0,0,err
+	}
+	return tableID,handle,err
 }
 
 // appendTableIndexPrefix appends table index prefix  "t[tableID]_i".
@@ -95,7 +114,22 @@ func EncodeIndexSeekKey(tableID int64, idxID int64, encodedValue []byte) kv.Key 
 // DecodeIndexKeyPrefix decodes the key and gets the tableID, indexID, indexValues.
 func DecodeIndexKeyPrefix(key kv.Key) (tableID int64, indexID int64, indexValues []byte, err error) {
 	/* Your code here */
-	//111
+	if !key.HasPrefix(tablePrefix){
+		return 0,0,nil,fmt.Errorf("prefix error")
+	}
+	tmp:=make([]byte,len([]byte(key)))
+	copy(tmp,key)
+	tmp=tmp[tablePrefixLength:]
+	tmp,tableID,err=codec.DecodeInt(tmp)
+	if err!=nil{
+		return 0,0,nil,err
+	}
+	tmp=tmp[len(indexPrefixSep):]
+	tmp,indexID,err=codec.DecodeInt(tmp)
+	if err!=nil{
+		return 0,0,nil,err
+	}
+	indexValues=tmp
 	return tableID, indexID, indexValues, nil
 }
 
