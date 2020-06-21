@@ -16,7 +16,6 @@ package tablecodec
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"math"
 	"time"
 
@@ -29,6 +28,8 @@ import (
 	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/codec"
 	"github.com/pingcap/tidb/util/rowcodec"
+
+	"fmt"
 )
 
 var (
