@@ -16,7 +16,6 @@ package tablecodec
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"math"
 	"time"
 
@@ -74,7 +73,7 @@ func EncodeRowKeyWithHandle(tableID int64, handle int64) kv.Key {
 func DecodeRecordKey(key kv.Key) (tableID int64, handle int64, err error) {
 	/* Your code here */
 	if !key.HasPrefix(tablePrefix){
-		return 0,0,fmt.Errorf("prefix error")
+		return 0,0,errors.New("prefix error")
 	}
 	tmp:=make([]byte,len([]byte(key)))
 	copy(tmp,key)
