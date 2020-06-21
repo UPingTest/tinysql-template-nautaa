@@ -16,6 +16,7 @@ package tablecodec
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"math"
 	"time"
 
@@ -83,7 +84,7 @@ func DecodeRecordKey(key kv.Key) (tableID int64, handle int64, err error) {
 		return 0,0,err
 	}
 	if !kv.Key(tmp).HasPrefix(recordPrefixSep){
-		return 0,0,fmt.Errorf("prefix error")
+		return 0,0,errors.New("prefix error")
 	}
 	tmp=tmp[recordPrefixSepLength:]
 	_,handle,err=codec.DecodeInt(tmp)
@@ -114,7 +115,7 @@ func EncodeIndexSeekKey(tableID int64, idxID int64, encodedValue []byte) kv.Key 
 func DecodeIndexKeyPrefix(key kv.Key) (tableID int64, indexID int64, indexValues []byte, err error) {
 	/* Your code here */
 	if !key.HasPrefix(tablePrefix){
-		return 0,0,nil,fmt.Errorf("prefix error")
+		return 0,0,nil,errors.New("prefix error")
 	}
 	tmp:=make([]byte,len([]byte(key)))
 	copy(tmp,key)
